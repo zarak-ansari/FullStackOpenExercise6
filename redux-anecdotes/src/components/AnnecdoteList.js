@@ -1,6 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { incrementVotesOf } from '../reducers/anecdoteReducer'
+import { incrementVotesOf, setAnecdotes } from '../reducers/anecdoteReducer'
 import { showNotification, hideNotification } from '../reducers/notificationReducer'
+import anecdoteService from '../services/anecdoteService'
+import { useEffect } from 'react'
 
 const AnnecdoteList = () => {
     const anecdotes = useSelector(state => state.anecdotes)
@@ -8,6 +10,10 @@ const AnnecdoteList = () => {
 
     const dispatch = useDispatch()
     
+    useEffect(() => {
+        anecdoteService.getAll().then(anecodotesFromBackend => dispatch(setAnecdotes(anecodotesFromBackend)))
+    }, [dispatch])
+
     const vote = (id) => {
         dispatch(incrementVotesOf(id))
         const anecdoteVotedOn = anecdotes.find(anecdote => anecdote.id === id)
