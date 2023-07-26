@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { incrementVotesOf, setAnecdotes } from '../reducers/anecdoteReducer'
-import { showNotification, hideNotification } from '../reducers/notificationReducer'
-import anecdoteService from '../services/anecdoteService'
+import { incrementVotesOf, initializeAnecdotes } from '../reducers/anecdoteReducer'
+import { displayNotification } from '../reducers/notificationReducer'
 import { useEffect } from 'react'
 
 const AnnecdoteList = () => {
@@ -11,14 +10,13 @@ const AnnecdoteList = () => {
     const dispatch = useDispatch()
     
     useEffect(() => {
-        anecdoteService.getAll().then(anecodotesFromBackend => dispatch(setAnecdotes(anecodotesFromBackend)))
+        dispatch(initializeAnecdotes())
+        // anecdoteService.getAll().then(anecodotesFromBackend => dispatch(setAnecdotes(anecodotesFromBackend)))
     }, [dispatch])
 
-    const vote = (id) => {
-        dispatch(incrementVotesOf(id))
-        const anecdoteVotedOn = anecdotes.find(anecdote => anecdote.id === id)
-        dispatch(showNotification(`you voted '${anecdoteVotedOn.content}'`))
-        setTimeout(() => dispatch(hideNotification()), 5000)
+    const vote = (anecdote) => {
+        dispatch(incrementVotesOf(anecdote))
+        dispatch(displayNotification(`you voted '${anecdote.content}'`, 5))
     }
 
     const filteredAnecdotes = filter === '' ? anecdotes : anecdotes.filter(anecdote => anecdote.content.includes(filter))
@@ -32,7 +30,7 @@ const AnnecdoteList = () => {
                 </div>
                 <div>
                     has {anecdote.votes}
-                    <button onClick={() => vote(anecdote.id)}>vote</button>
+                    <button onClick={() => vote(anecdote)}>vote</button>
                 </div>
             </div>
             )}
